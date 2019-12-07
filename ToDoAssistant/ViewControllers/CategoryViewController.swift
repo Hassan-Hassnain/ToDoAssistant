@@ -7,17 +7,20 @@
 //
 
 import UIKit
+import RealmSwift
 
 class CategoryViewController: UITableViewController{
+    let realm = try! Realm()
+    var categories: Results<Category>?
     
-    var categories: [String] = ["Item-1", "Item-2", "Item-3"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
+        loadDataFromRealm()
         
     }
+    //MARK: - New Category Add Button Function
     
     @IBAction func AddButton(_ sender: UIBarButtonItem)
     {
@@ -32,27 +35,48 @@ class CategoryViewController: UITableViewController{
         }
 
         let action = UIAlertAction(title: "Add Category", style: .default) { (action) in
-            self.categories.append(textField.text!)
-            self.saveToRealm()
+            if let text = textField.text {
+                let newCat = Category()
+                newCat.title = text
+                self.saveToRealm(This: newCat)
+            }
         }
 
         alert.addAction(action)
         present(alert, animated: true, completion: nil)
-        self.saveToRealm()
     }
+    
+    //MARK: - Table View Functions
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return categories.count
+        return categories?.count ?? 1
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
         
-        cell.textLabel?.text = categories[indexPath.row]
+        if let category = categories?[indexPath.row]        {
+            
+            cell.textLabel?.text = category.title ?? "No Category Created yet"
+        }
         
         return cell
     }
     
-    func saveToRealm() {
+    //MARK: - Data Model Functions
+    
+    func saveToRealm(This category: Category) {
+        do {
+            try realm.write {
+                realm.add(category)
+            }
+        } catch {
+            print("Error during saving data \(error)")
+        }
+        loadDataFromRealm()
+    }
+    
+    func loadDataFromRealm(){
+        categories = realm.objects(Category.self)
         tableView.reloadData()
     }
 }
