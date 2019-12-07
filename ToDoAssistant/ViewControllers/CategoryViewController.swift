@@ -65,6 +65,15 @@ class CategoryViewController: UITableViewController, SwipeTableViewCellDelegate{
         
         return cell
     }
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        performSegue(withIdentifier: "GoToTasks", sender: self)
+    }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let destinationViewController = segue.destination as! TasksTableViewController
+        if let indexPath = tableView.indexPathForSelectedRow {
+            destinationViewController.selectedCategory = categories?[indexPath.row]
+        }
+    }
     //MARK: - SwipeTableView Delegate Function
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction]? {
 
