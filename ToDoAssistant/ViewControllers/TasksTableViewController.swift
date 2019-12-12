@@ -201,7 +201,7 @@ class TasksTableViewController: UITableViewController, SwipeTableViewCellDelegat
     
     func saveToCompletedList(at indexPath: IndexPath) {
         
-        var compTask = CompletedTask()
+        let compTask = CompletedTask()
         if let item = selectedCategory?.tasks[indexPath.row] {
             if let catTitle = selectedCategory?.title { compTask.categoryTitle = catTitle}
             compTask.taskTitle = (item.title)
