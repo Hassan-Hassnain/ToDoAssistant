@@ -11,9 +11,9 @@ import RealmSwift
 import SwipeCellKit
 
 class CategoryViewController: UITableViewController, SwipeTableViewCellDelegate{
+    
     let realm = try! Realm()
     var categories: Results<Category>?
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()

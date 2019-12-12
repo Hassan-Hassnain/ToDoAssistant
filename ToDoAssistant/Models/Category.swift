@@ -11,6 +11,6 @@ import RealmSwift
 
 class Category: Object{
     @objc dynamic var title: String?
-    
+    @objc dynamic var numOfTasks: Int = 0
     let tasks = List<Task>()
 }
