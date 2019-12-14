@@ -10,9 +10,9 @@ import UIKit
 import RealmSwift
 import SwipeCellKit
 
-class TasksTableViewController: UITableViewController, SwipeTableViewCellDelegate {
+class TasksTableViewController: HelperFunctions {
     
-    let realm = try! Realm()
+//    let realm = try! Realm()
     var tasks: Results<Task>?
     var totalTasks: Int?
     var segueTo: String?
@@ -27,6 +27,8 @@ class TasksTableViewController: UITableViewController, SwipeTableViewCellDelegat
     @IBOutlet weak var detailLabel: UILabel!
     @IBOutlet weak var createdDate: UILabel!
     @IBOutlet weak var completionDate: UILabel!
+    
+    
     var selectedTask: Task? = nil
     
     override func viewDidLoad() {
@@ -113,7 +115,7 @@ class TasksTableViewController: UITableViewController, SwipeTableViewCellDelegat
         selectedTask = tasks?[indexPath.row]
         detailView.isHidden = false
         showTaskDetail(Of: indexPath)
-        
+        tableView.deselectRow(at: indexPath, animated: true)
     }
     
     @IBAction func completedButtonPressed(_ sender: UIBarButtonItem) {
@@ -139,50 +141,13 @@ class TasksTableViewController: UITableViewController, SwipeTableViewCellDelegat
     }
     
     
-    //MARK: - SwipeTableView Delegate Function
-    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction]? {
-        
-        guard orientation == .right else { return nil }
-        
-        let deleteAction = SwipeAction(style: .destructive, title: "Delete")
-        { action, indexPath in
-            // handle action by updating model with deletion
-            
-            self.updateModel(at: indexPath)
-            
-        }
-        
-        // customize the action appearance
-        deleteAction.image = UIImage(named: "Delete-Icon")
-        //tableView.reloadData()
-        return [deleteAction]
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, editActionsOptionsForItemAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> SwipeOptions {
-        var options = SwipeOptions()
-        options.expansionStyle = .destructive
-        return options
-    }
-    
-    //MARK: - Data Model Functions
-    
-    //      func saveToRealm(This task: Task) {
-    //          do {
-    //              try realm.write {
-    //                  realm.add(task)
-    //              }
-    //          } catch {
-    //              print("Error during saving data \(error)")
-    //          }
-    //          loadDataFromRealm()
-    //      }
-    
+   
     func loadDataFromRealm(){
         tasks = selectedCategory?.tasks.sorted(byKeyPath:  "title", ascending: true)
         tableView.reloadData()
     }
     
-    func updateModel(at indexPath: IndexPath){
+    override func updateModel(at indexPath: IndexPath){
         if let catForDeletion = tasks?[indexPath.row] {
             
             saveToCompletedList(at: indexPath)
@@ -199,9 +164,10 @@ class TasksTableViewController: UITableViewController, SwipeTableViewCellDelegat
         tableView.reloadData()
     }
     
+    
     func saveToCompletedList(at indexPath: IndexPath) {
         
-        var compTask = CompletedTask()
+        let compTask = CompletedTask()
         if let item = selectedCategory?.tasks[indexPath.row] {
             if let catTitle = selectedCategory?.title { compTask.categoryTitle = catTitle}
             compTask.taskTitle = (item.title)
@@ -281,13 +247,17 @@ class TasksTableViewController: UITableViewController, SwipeTableViewCellDelegat
         if let task = tasks?[indexpath.row] {
             titleLabel.text = task.title
             detailLabel.text = task.details
-            createdDate.text = getDateStirn(date: task.dateCreated)
-            completionDate.text = getDateStirn(date: task.dateCompleted)
+            createdDate.text = getDateStirng(date: task.dateCreated)
+            completionDate.text = getDateStirng(date: task.dateCompleted)
         }
     }
     
+    @IBAction func detailViewBackButton(_ sender: UIButton) {
+        detailView.isHidden = true
+    }
     
-    func getDateStirn(date: Date?) -> String
+    
+    func getDateStirng(date: Date?) -> String
     {
         if date != nil {
             let formatter = DateFormatter()
